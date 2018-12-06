@@ -44,9 +44,9 @@ In this example, removing all C/c units was best, producing the answer 4. What i
 import sys
 
 
-def findRemainingUnits(polymer):
+def reactPolymer(polymer):
     """ Destroys all reactive pairs in given polymer until no more reactions
-        can occur; returns length of resulting polymer. """
+        can occur; returns resulting polymer. """
 
     toCheck = 0
     while toCheck < len(polymer) - 1:
@@ -64,7 +64,7 @@ def findRemainingUnits(polymer):
         else:
             toCheck += 1
 
-    return len(polymer)
+    return ''.join(polymer)
     
 
 def willDestroy(left, right):
@@ -92,7 +92,7 @@ def findFewestUnits(polymer):
         newPolymer = newPolymer.replace(letter.lower(), '')
 
         # save reacted polymer length if shortest so far
-        shortest = min(shortest, findRemainingUnits(list(newPolymer)))
+        shortest = min(shortest, len(reactPolymer(list(newPolymer))))
         
     return shortest
 
@@ -103,11 +103,11 @@ def main():
     polymer = sys.stdin.readline().strip()
 
     # PART ONE
-    remainingUnits = findRemainingUnits(list(polymer))
-    print("There are", remainingUnits, "units remaining in the reacted polymer.")
+    newPolymer = reactPolymer(list(polymer))
+    print("There are", len(newPolymer), "units remaining in the reacted polymer.")
 
     # PART TWO
-    fewestUnits = findFewestUnits(polymer)
+    fewestUnits = findFewestUnits(newPolymer)
     print("The shortest reacted polymer has", fewestUnits, "units.")
     
 
