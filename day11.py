@@ -43,6 +43,8 @@ What is the X,Y,size identifier of the square with the largest total power?
 import sys
 
 def makeGrid(SN):
+    """ Given a serial number, returns a 300x300 grid of power values
+        calculated according to prompt. """
 
     # initialize grid size (300x300)
     grid = [[0] * 300 for _ in range(300)]
@@ -63,7 +65,9 @@ def makeGrid(SN):
 
 
 def getLargest3x3(grid):
-
+    """ Given a grid of power values, returns the upper lefthand coordinate
+        of the 3x3 square with the largest sum of power values. """
+    
     highX = 0     # upper left-hand X
     highY = 0     # upper left-hand Y
     highest = 0   # square sum
@@ -88,29 +92,44 @@ def getLargest3x3(grid):
 
 
 def getLargestSquare(grid):
+    """ Given a grid of power values, returns the upper lefthand coordinate
+        and the size of the square with the largest sum of power values. """
 
     highX = 0     # upper left-hand X
     highY = 0     # upper left-hand Y
-    highest = 0   # square sum
+    highSize = 0  # size of the square
+    highest = 0   # largest square sum
 
-    # find largest sum of each size of square
+    # initialize sum grid size (301x301 for ease)
+    sums = [[0] * 301 for _ in range(301)]
+
+    # create summation grid
+    for y in range(1, 301):
+        for x in range(1, 301):
+            sums[y][x] = grid[y-1][x-1] + \
+                         sums[y-1][x]   + \
+                         sums[y]  [x-1] - \
+                         sums[y-1][x-1]
+
+    # find largest sum
     for size in range(1, 301):
-        for y in range(300-size):
-            for x in range(300-size):
+        for y in range(size, 301):
+            for x in range(size, 301):
 
-                # calculate sum of current square
-                local = 0
-                for i in range(size):
-                    for j in range(size):
-                        local += grid[y+i][x+j]
+                # get local sum
+                local = sums[y]     [x]      - \
+                        sums[y-size][x]      - \
+                        sums[y]     [x-size] + \
+                        sums[y-size][x-size]
 
                 # save values if higher sum
                 if local > highest:
                     highest = local
-                    highX = x + 1
-                    highY = y + 1
+                    highX = x - size + 1
+                    highY = y - size + 1
+                    highSize = size
 
-    return (highX, highY), size
+    return highX, highY, highSize
     
 
 def main():
@@ -121,11 +140,11 @@ def main():
 
     # PART ONE
     coord = getLargest3x3(grid)
-    print("Upper left-hand coordinate:", coord)
+    print("UL coordinate:", coord)
 
     # PART TWO
-    coord, size = getLargestSquare(grid)
-    print("UL coordinate, square size:", coord)
+    x, y, size = getLargestSquare(grid)
+    print("UL coordinate:", (x, y), "- Square size:", size)
 
     
 if __name__ == "__main__":
